@@ -1,6 +1,6 @@
 'use strict';
 /* globals module, require */
-
+const _ = require.main.require('lodash');
 var Topics = require.main.require('./src/topics'),
 	Posts = require.main.require('./src/posts'),
 	apiMiddleware = require('./middleware'),
