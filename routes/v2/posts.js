@@ -1,11 +1,14 @@
 'use strict';
 /* globals module, require */
 
-var posts = require.main.require('./src/posts'),
-	flags = require.main.require('./src/flags'),
-	apiMiddleware = require('./middleware'),
-	errorHandler = require('../../lib/errorHandler'),
-	utils = require('./utils');
+var posts = require.main.require("./src/posts"),
+  topics = require.main.require("./src/topics"),
+  flags = require.main.require("./src/flags"),
+  apiMiddleware = require("./middleware"),
+  errorHandler = require("../../lib/errorHandler"),
+  utils = require("./utils");
+
+const { wrapPromise } = utils;
 
 
 module.exports = function(middleware) {
@@ -38,7 +41,7 @@ module.exports = function(middleware) {
 				errorHandler.handle(err, res);
 			});
 		});
-	
+
 	app.route('/:pid/state')
 		.put(apiMiddleware.requireUser, apiMiddleware.validatePid, function (req, res) {
 			posts.restore(req.params.pid, req.user.uid, function (err) {
@@ -50,7 +53,7 @@ module.exports = function(middleware) {
 				errorHandler.handle(err, res);
 			});
 		});
-		
+
 	app.route('/:pid/vote')
 		.post(apiMiddleware.requireUser, function(req, res) {
 			if (!utils.checkRequired(['delta'], req, res)) {
@@ -68,7 +71,7 @@ module.exports = function(middleware) {
 			} else {
 				posts.unvote(req.params.pid, req.user.uid, function(err, data) {
 					errorHandler.handle(err, res, data);
-				})	
+				})
 			}
 		})
 		.delete(apiMiddleware.requireUser, function(req, res) {
@@ -88,7 +91,7 @@ module.exports = function(middleware) {
 				errorHandler.handle(err, res);
 			});
 		});
-	
+
 	app.route('/:pid/flag')
 		.post(apiMiddleware.requireUser, function(req, res) {
 			if (!utils.checkRequired(['type','reason'], req, res)) {
@@ -100,5 +103,17 @@ module.exports = function(middleware) {
 			});
 		});
 
+	console.log('HERE I AM AGAIN!!!!');
+		app.route("/:pid/replies").get(
+      apiMiddleware.requireUser,
+      wrapPromise(async (req, res) => {
+        const { pid } = req.params;
+        const { uid } = req.user;
+
+        const replies = await topics.getPostReplies([pid], uid);
+
+        return replies;
+      })
+    );
 	return app;
 };
