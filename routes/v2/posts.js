@@ -103,10 +103,9 @@ module.exports = function(middleware) {
 			});
 		});
 
-	console.log('HERE I AM AGAIN!!!!');
 		app.route("/:pid/replies").get(
       apiMiddleware.requireUser,
-      wrapPromise(async (req, res) => {
+      wrapPromise(async (req) => {
         const { pid } = req.params;
         const { uid } = req.user;
 
