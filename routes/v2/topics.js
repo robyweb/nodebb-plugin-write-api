@@ -129,13 +129,6 @@ module.exports = function(middleware) {
 			});
 		});
 	
-	app.route('/:tid/:pid')
-		.get(apiMiddleware.requireUser, apiMiddleware.validateTid, apiMiddleware.validatePid, function(req, res) {
-			Topics.getTopicPosts(req.params.tid, 'tid:' + req.params.tid + ':posts', 0, 1000000, req.user.uid, true, function(err, posts) {
-				errorHandler.handle(err, res, posts.filter(post => post.toPid === req.params.pid));
-			});
-		})
-
 	// **DEPRECATED** Do not use.
 	app.route('/follow')
 		.post(apiMiddleware.requireUser, function(req, res) {
