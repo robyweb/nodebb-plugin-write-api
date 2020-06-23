@@ -108,8 +108,13 @@ module.exports = function(middleware) {
       wrapPromise(async (req) => {
         const { pid } = req.params;
         const { uid } = req.user;
+				const { recursiveLevels = 0 } = req.query;
 
-        const replies = await topics.getPostReplies([pid], uid);
+        const replies = await topics.getPostReplies(
+          [pid],
+          uid,
+          recursiveLevels
+        );
 
         return replies;
       })
